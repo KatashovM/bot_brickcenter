@@ -1,0 +1,7 @@
+
+aiogram==3.10.0
+pydantic==2.8.2
+pydantic-settings==2.4.0
+aiosmtplib==3.0.1
+SQLAlchemy==2.0.31
+PyYAML==6.0.2
