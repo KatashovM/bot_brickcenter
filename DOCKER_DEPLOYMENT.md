@@ -36,14 +36,16 @@ GitHub Action автоматически:
 - Срабатывает при push в ветки `master` или `main`
 - Собирает Docker образ для архитектур `linux/amd64` и `linux/arm64`
 - Публикует образ в Docker Hub с тегами:
-  - `latest` - для основной ветки
-  - `master` или `main` - для соответствующей ветки
+  - `latest` - только для основной ветки (master/main)
+  - `{branch_name}` - для всех остальных веток (например, `develop`, `feature/new-feature`)
   - `{branch}-{commit_sha}` - для конкретного коммита
+  - `master` или `main` - для соответствующей основной ветки
 
 ### 4. Использование образа
 
 После успешной сборки вы можете запустить бота:
 
+**Для продакшена (основная ветка):**
 ```bash
 docker run -d \
   --name telegram-bot \
@@ -57,6 +59,15 @@ docker run -d \
   -e MAIL_TO=admin@example.com \
   -v bot_data:/app/data \
   your_dockerhub_username/telegram-bot:latest
+```
+
+**Для разработки (другие ветки):**
+```bash
+# Для ветки develop
+docker run -d --name telegram-bot-dev your_dockerhub_username/telegram-bot:develop
+
+# Для ветки feature/new-feature
+docker run -d --name telegram-bot-feature your_dockerhub_username/telegram-bot:feature/new-feature
 ```
 
 ### 5. Переменные окружения
