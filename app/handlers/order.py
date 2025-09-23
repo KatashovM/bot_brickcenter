@@ -8,6 +8,8 @@ from ..keyboards import quantity_unit_kb, delivery_type_kb, confirm_kb, main_kb
 from ..config import settings
 from ..models import SessionLocal, Order
 from ..mailer import send_mail
+import app.models as m
+from app.config import settings
 router=Router()
 @router.message(F.text=="🧱 Оформить заявку")
 @router.message(F.text=="/order")
@@ -71,7 +73,9 @@ async def confirm_edit(c: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data=="confirm:yes")
 async def confirm_yes(c: CallbackQuery, state: FSMContext):
     d=OrderDraft(**(await state.get_data()).get("draft"))
-    s=SessionLocal()
+    if m.Engine is None or m.SessionLocal is None:
+        m.setup_db(settings.db_path)
+    s=m.SessionLocal()
     s.add(Order(material=d.material or "", quantity_value=d.quantity_value or "", quantity_unit=d.quantity_unit or "",
                 delivery_type=d.delivery_type or "", delivery_address=d.delivery_address or "",
                 name=d.name or "", phone=d.phone or "", email=d.email or ""))
