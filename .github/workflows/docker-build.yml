@@ -43,13 +43,22 @@ jobs:
             echo "tag=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
           fi
 
+    - name: Validate Docker Hub username
+      id: validate-username
+      run: |
+        if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then
+          echo "Error: DOCKER_USERNAME secret is not set"
+          exit 1
+        fi
+        echo "username=${{ secrets.DOCKER_USERNAME }}" >> $GITHUB_OUTPUT
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         platforms: linux/amd64,linux/arm64
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/brickcenter_bot:${{ steps.branch-name.outputs.tag }}
+        tags: ${{ secrets.DOCKER_USERNAME }}/brickcenter_bot:${{ steps.branch-name.outputs.tag }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
